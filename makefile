@@ -5,4 +5,4 @@ build:
 	npx astro build
 	
 deploy:
-	npx wrangler deploy 
+	npx wrangler deploy --assets dist
