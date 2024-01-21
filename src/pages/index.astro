@@ -7,11 +7,11 @@ const x = 2 + 2
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Lionsmane</title>
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script is:inline src="https://unpkg.com/htmx.org@1.9.10"></script>
   </head>
 
   <body>
-    x is {x}
+    The x is {x}
 
     <button hx-post="/clicked" hx-swap='outerHTML'>
       Click Me
