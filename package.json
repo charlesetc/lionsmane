@@ -5,6 +5,7 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^8.1.0",
+    "@astrojs/mdx": "^2.0.5",
     "astro": "^4.2.1",
     "bourbon-vanilla": "^1.0.1",
     "hono": "^3.12.6"

@@ -1,20 +1,16 @@
 ---
-const x = 2 + 2
+const { title, page_class } = Astro.props.frontmatter || Astro.props;
 ---
-
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lionsmane</title>
+    <title>{title}</title>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link rel="stylesheet" href="/main.css">
   </head>
 
-  <body>
-    The x is {x}
-
-    <button hx-post="/clicked" hx-swap='outerHTML'>
-      Click Me
-    </button>
+  <body class={page_class}>
+    <slot />
   </body>
 </html>

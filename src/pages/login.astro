@@ -1,0 +1,20 @@
+---
+import Page from '../layouts/page.astro';
+
+if (Astro.request.method == 'POST') { 
+  console.log("POST log in");
+  return Astro.redirect('/');
+}
+---
+<Page title='Log in'>
+  <h1>Lionsmane</h1>
+
+  <a href="/">Back</a>
+
+  <form  method='POST' action='/login' class='login'>
+    <input required type="text" name="name" placeholder="Name" />
+    <input required type="email" name="email" placeholder="Email" />
+    <input required type="password" name="password" placeholder="Password" />
+    <button type="submit">Log in</button>
+  </form>
+</Page>

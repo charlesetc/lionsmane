@@ -1,0 +1,67 @@
+@font-face {
+  font-family: 'Benne-Regular';
+  src: url('/fonts/Benne-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  padding: calc(min(50px, 5%));
+  font-family: 'Benne-Regular', serif;
+  font-size: 20px;
+}
+
+.login *, .signup * { 
+  display: block;
+  margin: 10px 0;
+}
+
+button, html a.button {
+  color: black;
+  padding: 4px 6px;
+  margin-right: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-block;
+  background: #e9e9ed;
+  border: 1px solid #8f8f9d;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+button:hover, .button:hover {
+  background: #d9d9e2;
+  border-color: #7f7f8f;
+}
+
+.button { 
+  text-decoration: none;
+  font-family: sans-serif;
+  line-height: 1.2;
+}
+
+
+form input {
+  outline: none;
+  padding: 4px 6px;
+  width: 300px;
+  font-size: 16px;
+}
+
+h1, h2, h3 { 
+  font-family: 'Benne-Regular', serif;
+}
+
+h1 {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+.index-page p {
+  font-size: 25px;
+  max-width: 800px;
+}
+
+a, a:visited {
+  color: #0033cc;
+}
