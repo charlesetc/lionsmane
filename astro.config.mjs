@@ -6,6 +6,13 @@ import mdx from "@astrojs/mdx";
 // https://astro.build/config
 export default defineConfig({
   output: "server",
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    runtime: {
+      "DO": { 
+        type: "durable-object",
+        className: "DObject",
+      },
+    }
+  }),
   integrations: [mdx()]
 });

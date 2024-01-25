@@ -10,7 +10,7 @@ const { title, page_class } = Astro.props.frontmatter || Astro.props;
     <link rel="stylesheet" href="/main.css">
   </head>
 
-  <body class={page_class}>
+  <body hx-boost='true' class={page_class}>
     <slot />
   </body>
 </html>

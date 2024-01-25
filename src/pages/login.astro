@@ -1,6 +1,9 @@
 ---
 import Page from '../layouts/page.astro';
 
+const DOBJECT = Astro.locals.runtime.env.DOBJECT;
+console.log(DOBJECT)
+
 if (Astro.request.method == 'POST') { 
   console.log("POST log in");
   return Astro.redirect('/');
