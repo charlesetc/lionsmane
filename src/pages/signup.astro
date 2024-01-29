@@ -1,10 +1,12 @@
 ---
 import Page from '../layouts/page.astro';
+import User from '../models/user.js'; 
 
 if (Astro.request.method == 'POST') { 
   console.log("POST sign up");
   return Astro.redirect('/');
 }
+
 ---
 <Page title='Sign up'>
   <h1>Lionsmane</h1>
