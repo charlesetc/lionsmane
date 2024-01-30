@@ -1,8 +1,5 @@
 dev:
-	npx astro dev
+	npx wrangler dev ./src/index.jsx --port 8000
 
-build:
-	npx astro build
-	
 deploy:
 	npx wrangler deploy --assets dist

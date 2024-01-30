@@ -1,16 +1,7 @@
 name = 'lionsmane'
 main = 'dist/_worker.js'
 
-compatibility_date = "2024-01-13"
+compatibility_date = "2023-12-18"
 
-[build]
-command = "npx astro build"
-
-[durable_objects]
-bindings = [
-  { name = "DOBJECT", class_name = "DObject" }
-]
-
-[[migrations]]
-tag = "v1"
-new_classes = ["DOBject"]
+[site]
+bucket = "./assets"
