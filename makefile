@@ -1,5 +1,5 @@
 dev:
-	npx wrangler dev ./src/index.jsx --port 8000
+	deno task start
 
 deploy:
-	npx wrangler deploy --assets dist
+	source .secrets && deployctl deploy --project cardamom --prod src/index.jsx

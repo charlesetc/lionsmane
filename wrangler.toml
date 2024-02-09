@@ -1,7 +1,0 @@
-name = 'lionsmane'
-main = 'dist/_worker.js'
-
-compatibility_date = "2023-12-18"
-
-[site]
-bucket = "./assets"

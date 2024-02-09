@@ -1,10 +1,10 @@
-import { Hono } from 'hono';
-import { serveStatic } from 'hono/cloudflare-workers'
-import { jsxRenderer, useRequestContext } from 'hono/jsx-renderer'
+/** @jsx jsx */
+/** @jsxFrag Fragment */
+
+import { Hono } from 'https://deno.land/x/hono/mod.ts'
+import { jsx, Fragment, serveStatic, jsxRenderer, useRequestContext } from 'https://deno.land/x/hono/middleware.ts'
 
 const app = new Hono();
-
-app.use('/**', serveStatic({ root: './' }))
 
 app.get('/*',
   jsxRenderer(({ children, title }) => {
@@ -88,6 +88,8 @@ app.post('/signup', async (c) => {
   // and now need to save ...
   return c.redirect('/')
 })
+
+app.use('/*', serveStatic({ root: './assets' }))
     
 
-export default app;
+Deno.serve(app.fetch)
