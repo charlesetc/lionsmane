@@ -1,5 +1,11 @@
 {
-  "tasks": {
-    "start": "deno run --allow-read --allow-net src/index.jsx"
+  "tasks": {},
+  "deploy": {
+    "project": "32b8fd4a-d2fe-497f-8b59-cca27a7654ab",
+    "exclude": [
+      "**/node_modules"
+    ],
+    "include": [],
+    "entrypoint": "src/index.jsx"
   }
 }

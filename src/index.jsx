@@ -5,6 +5,7 @@ import { Hono } from 'https://deno.land/x/hono/mod.ts'
 import { jsx, Fragment, serveStatic, jsxRenderer, useRequestContext } from 'https://deno.land/x/hono/middleware.ts'
 
 const app = new Hono();
+const kv = await Deno.openKv();
 
 app.get('/*',
   jsxRenderer(({ children, title }) => {
@@ -28,10 +29,15 @@ app.get('/*',
 
 
 app.get('/', (c) => {
-  const x = 2 + 2;
+  const id = kv['id'] ? kv['id'] + 1 : 1
+  kv['id'] = id
   return c.render(
     <>
       <h1>Lionsmane</h1>
+
+      <p>
+    This site has been visited {id} times.
+    </p>
 
 
       <p>
