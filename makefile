@@ -1,5 +1,5 @@
 dev:
-	deno run --unstable-kv --allow-read --allow-net src/index.jsx
+	deno run --watch=. --unstable-kv --allow-read --allow-write --allow-net src/index.jsx
 
 deploy:
-	source .secrets && deployctl deploy --project cardamom --prod src/index.jsx
+	source .secrets && deployctl deploy --project lionsmane --prod src/index.jsx

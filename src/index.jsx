@@ -2,12 +2,44 @@
 /** @jsxFrag Fragment */
 
 import { Hono } from 'https://deno.land/x/hono/mod.ts'
-import { jsx, Fragment, serveStatic, jsxRenderer, useRequestContext } from 'https://deno.land/x/hono/middleware.ts'
+import {
+  csrf,
+  compress,
+  logger,
+  jsx,
+  Fragment,
+  serveStatic,
+  jsxRenderer,
+  useRequestContext
+} from 'https://deno.land/x/hono/middleware.ts'
+import * as bcrypt from "https://deno.land/x/bcrypt/mod.ts";
+import sessions from './session.js'
+import { kv } from './kv.js'
+import flash from './flash.js'
 
 const app = new Hono();
-const kv = await Deno.openKv();
 
-app.get('/*',
+app.use(logger())
+app.use(compress())
+app.use(csrf())
+app.use(flash)
+sessions(app)
+
+async function Flashes() {
+  const c = useRequestContext()
+  const flashes = await c.flash.get()
+  console.log({flashes})
+  await c.flash.clear()
+  return (
+    <>
+      {flashes.map((flash) => (
+        <div class="flash">{flash}</div>
+      ))}
+    </>
+  )
+}
+
+app.use('/*',
   jsxRenderer(({ children, title }) => {
     return (
       <html lang="en">
@@ -20,6 +52,8 @@ app.get('/*',
         </head>
 
         <body hx-boost='true'>
+          <Flashes />
+
           {children}
         </body>
       </html>
@@ -27,18 +61,10 @@ app.get('/*',
   })
 )
 
-
-app.get('/', (c) => {
-  const id = kv['id'] ? kv['id'] + 1 : 1
-  kv['id'] = id
-  return c.render(
+function LandingPage() {
+  return (
     <>
       <h1>Lionsmane</h1>
-
-      <p>
-    This site has been visited {id} times.
-    </p>
-
 
       <p>
         The world we have is too complex to make sense of alone; the problems we’re
@@ -47,12 +73,53 @@ app.get('/', (c) => {
 
       <a class='button' href="/signup">Sign up</a>
       <a class='button' href="/login">Log in</a>
-    </>, 
-    { 
-      title: 'Lionsmane'
-    }
+    </>
   )
+}
+
+function Dashboard({user}) {
+  return (
+    <>
+      <h1>Lionsmane</h1>
+      <p>Logged in as {user.name} | {user.email} <a href="/logout">Log out</a></p>
+    </>
+  )
+}
+
+
+app.get('/', async (c) => {
+  const email = c.session().get('email')
+  if (email) {
+    const user = (await kv.get(["users", email])).value
+    return c.render(<Dashboard user={user} />, { title: 'Lionsmane' })
+  } else {
+    return c.render(<LandingPage />, { title: 'Lionsmane' })
+  }
 })
+
+app.post('/signup', async (c) => {
+  const {name, email, password} = Object.fromEntries(await c.req.formData())
+  const salt = await bcrypt.genSalt(8);
+  const hash = await bcrypt.hash(password, salt);
+
+  const user = (await kv.get(["users", email])).value
+  if (user) {
+    c.flash.add("User already exists")
+    return c.redirect('/signup')
+  }
+
+  await kv.set(["users", email], {
+    name,
+    email,
+    hash,
+    salt,
+  })
+  c.session().set('email', email)
+
+  return c.redirect('/')
+})
+
+
 
 app.get('/signup', (c) => {
   return c.render(
@@ -71,6 +138,28 @@ app.get('/signup', (c) => {
   )
 })
 
+app.post('/login', async (c) => {
+  const {email, password} = Object.fromEntries(await c.req.formData())
+  const user = (await kv.get(["users", email])).value
+  
+  if (!user) {
+    c.flash.add("Invalid email or password")
+    return c.redirect('/login')
+  }
+  
+  const valid = await bcrypt.compare(password, user.hash)
+  
+  if (!valid) {
+    c.flash.add("Invalid email or password")
+    return c.redirect('/login')
+  }
+
+  c.session().set('email', email)
+    
+  return c.redirect('/')
+})
+
+
 app.get('/login', (c) => {
   return c.render(
     <>
@@ -79,7 +168,6 @@ app.get('/login', (c) => {
       <a href="/">Back</a>
 
       <form  method='POST' action='/login' class='login'>
-        <input required type="text" name="name" placeholder="Name" />
         <input required type="email" name="email" placeholder="Email" />
         <input required type="password" name="password" placeholder="Password" />
         <button type="submit">Log in</button>
@@ -88,10 +176,8 @@ app.get('/login', (c) => {
   )
 })
 
-app.post('/signup', async (c) => {
-  const {name, email, password} = Object.fromEntries(await c.req.formData())
-  console.log({name, email, password})
-  // and now need to save ...
+app.get('/logout', (c) => {
+  c.session().deleteSession()
   return c.redirect('/')
 })
 
