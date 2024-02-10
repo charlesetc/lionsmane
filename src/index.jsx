@@ -12,7 +12,7 @@ import {
   jsxRenderer,
   useRequestContext
 } from 'https://deno.land/x/hono/middleware.ts'
-import * as bcrypt from "https://deno.land/x/bcrypt/mod.ts";
+import * as scrypt from "https://deno.land/x/scrypt/mod.ts";
 import sessions from './session.js'
 import { kv } from './kv.js'
 import flash from './flash.js'
@@ -99,8 +99,6 @@ app.get('/', async (c) => {
 
 app.post('/signup', async (c) => {
   const {name, email, password} = Object.fromEntries(await c.req.formData())
-  const salt = await bcrypt.genSalt(8);
-  const hash = await bcrypt.hash(password, salt);
 
   const user = (await kv.get(["users", email])).value
   if (user) {
@@ -108,11 +106,12 @@ app.post('/signup', async (c) => {
     return c.redirect('/signup')
   }
 
+  const hash = await scrypt.hash(password, {logN: 8})
+
   await kv.set(["users", email], {
     name,
     email,
     hash,
-    salt,
   })
   c.session().set('email', email)
 
@@ -147,7 +146,7 @@ app.post('/login', async (c) => {
     return c.redirect('/login')
   }
   
-  const valid = await bcrypt.compare(password, user.hash)
+  const valid = await scrypt.verify(password, user.hash)
   
   if (!valid) {
     c.flash.add("Invalid email or password")
