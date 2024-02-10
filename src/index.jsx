@@ -41,17 +41,20 @@ async function Flashes() {
 
 app.use('/*',
   jsxRenderer(({ children, title }) => {
+    title = title || "Lionsmane"
     return (
       <html lang="en">
         <head>
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>{title || "Lionsmane"}</title>
+          <title>{title}</title>
           <script src="https://unpkg.com/htmx.org@1.9.10"></script>
           <link rel="stylesheet" href="/main.css" />
         </head>
 
         <body hx-boost='true'>
+          <h1>{title}</h1>
+
           <Flashes />
 
           {children}
@@ -64,8 +67,6 @@ app.use('/*',
 function LandingPage() {
   return (
     <>
-      <h1>Lionsmane</h1>
-
       <p>
         The world we have is too complex to make sense of alone; the problems we’re
         facing too important to tolerate distraction in the name of ad revenue.
@@ -80,7 +81,6 @@ function LandingPage() {
 function Dashboard({user}) {
   return (
     <>
-      <h1>Lionsmane</h1>
       <p>Logged in as {user.name} | {user.email} <a href="/logout">Log out</a></p>
     </>
   )
@@ -123,8 +123,6 @@ app.post('/signup', async (c) => {
 app.get('/signup', (c) => {
   return c.render(
     <>
-      <h1>Lionsmane</h1>
-
       <a href="/">Back</a>
 
       <form method='POST' action='/signup' class='signup'>
@@ -162,8 +160,6 @@ app.post('/login', async (c) => {
 app.get('/login', (c) => {
   return c.render(
     <>
-      <h1>Lionsmane</h1>
-
       <a href="/">Back</a>
 
       <form  method='POST' action='/login' class='login'>
