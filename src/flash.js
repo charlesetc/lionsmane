@@ -4,6 +4,6 @@ export default async function flash(c, next) {
     get: () => c.session().get('flashes') || [],
     clear: () => c.session().set('flashes', []),
   }
-  await next()
+  return await next()
 }
 
