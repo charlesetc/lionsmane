@@ -13,6 +13,7 @@ import {
   useRequestContext
 } from 'https://deno.land/x/hono/middleware.ts'
 import * as scrypt from "https://deno.land/x/scrypt/mod.ts";
+import nanoid from "https://deno.land/x/nanoid/mod.ts"
 import sessions from './session.js'
 import { kv } from './kv.js'
 import flash from './flash.js'
@@ -52,7 +53,7 @@ app.use('/*',
           <link rel="stylesheet" href="/main.css" />
         </head>
 
-        <body hx-boost='true'>
+        <body>
           <h1>{title}</h1>
 
           <Flashes />

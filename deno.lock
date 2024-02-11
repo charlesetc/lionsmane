@@ -7,6 +7,7 @@
     "https://deno.land/x/hono/mod.ts": "https://deno.land/x/hono@v4.0.0/mod.ts",
     "https://deno.land/x/hono_sessions/mod.ts": "https://deno.land/x/hono_sessions@v0.3.4/mod.ts",
     "https://deno.land/x/hono_sessions/src/store/deno/DenoKvStore.ts": "https://deno.land/x/hono_sessions@v0.3.4/src/store/deno/DenoKvStore.ts",
+    "https://deno.land/x/nanoid/mod.ts": "https://deno.land/x/nanoid@v3.0.0/mod.ts",
     "https://deno.land/x/scrypt/mod.ts": "https://deno.land/x/scrypt@v4.3.1/mod.ts"
   },
   "remote": {
@@ -164,6 +165,12 @@
     "https://deno.land/x/hono_sessions@v0.3.4/src/store/MemoryStore.ts": "c61a7b2974da37f111163dea484dc8b82c19107a913a47b004c579d7af7b81d3",
     "https://deno.land/x/hono_sessions@v0.3.4/src/store/Store.ts": "4ff3a3e1a2cf2398d1307657e9934fa2deb39253f421ae9ba7d4d52f21611aed",
     "https://deno.land/x/hono_sessions@v0.3.4/src/store/deno/DenoKvStore.ts": "0ad61bfd434c0cc2406ebfcd5744ab51c58d74d908ee8dbfee877a93d6fc8123",
+    "https://deno.land/x/nanoid@v3.0.0/customAlphabet.ts": "1cfd7cfd2f07ca8d78a7e7855fcc9f59abf01ef2a127484ef94328fadf940ead",
+    "https://deno.land/x/nanoid@v3.0.0/customRandom.ts": "af56e19038c891a4b4ef2be931554c27579bd407ee5bbea5cb64f6ee1347cbe3",
+    "https://deno.land/x/nanoid@v3.0.0/mod.ts": "3ead610e40c58d8fdca21d5da9ec661445a2b82526e19c34d05de5f90be8a1be",
+    "https://deno.land/x/nanoid@v3.0.0/nanoid.ts": "8d119bc89a0f34e7bbe0c2dbdc280d01753e431af553d189663492310a31085d",
+    "https://deno.land/x/nanoid@v3.0.0/random.ts": "4da71d5f72f2bfcc6a4ee79b5d4e72f48dcf4fe4c3835fd5ebab08b9f33cd598",
+    "https://deno.land/x/nanoid@v3.0.0/urlAlphabet.ts": "8b1511deb1ecb23c66202b6000dc10fb68f9a96b5550c6c8cef5009324793431",
     "https://deno.land/x/scrypt@v4.3.1/deps.ts": "629bb40670debea7a17f69f29235cd62c486286f735f55c5675a1246b903eac7",
     "https://deno.land/x/scrypt@v4.3.1/lib/_wasm/scrypt_wasm.generated.js": "160ed57e880cb44f8909632f1277dc7d7d1056be039a0abcc9bcbe2115871756",
     "https://deno.land/x/scrypt@v4.3.1/lib/helpers.ts": "c759a55275c6f85c8a803f0b217761ccd6d9b9b91f278946d69512a1d7661214",
