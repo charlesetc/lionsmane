@@ -5,6 +5,7 @@ import { jsx, Fragment } from 'https://deno.land/x/hono/middleware.ts'
 import { Hono } from 'https://deno.land/x/hono/mod.ts'
 import { nanoid } from "https://deno.land/x/nanoid/mod.ts"
 import { kv } from './kv.js'
+import { createPost } from './posts.jsx'
 
 const app = new Hono();
 
@@ -63,30 +64,57 @@ app.get('/new', async (c) => {
 })
 
 app.post('/new', async (c) => {
+  const user = await c.current_user()
+  if (!user) return c.redirect('/login')
+
   const {title, content} = Object.fromEntries(await c.req.formData())
-  
-  const id = nanoid()
-  await kv.set(["discussions", id], {
-    id,
+ 
+  const discussion_id = nanoid()
+  await kv.set(["discussions", discussion_id], {
+    id: discussion_id,
     title,
-    content,
+    author: user.email,
   })
-  
+
+  const post_id = nanoid()
+  kv.set(["posts", discussion_id, post_id], {
+    id: post_id,
+    content,
+    author: user.email,
+    discussion: discussion_id,
+  })
+
   return c.redirect('/discussions')
 })
 
-app.get('/:id', async (c) => {
-  const id = c.req.param('id')
-  const discussion = (await kv.get(["discussions", id])).value
+function Post({post}) {
+  return (
+    <div>
+      <p>{post.author}:</p>
+      <p>{post.content}</p>
+    </div>
+  )
+}
 
-  console.log(c)
+app.get('/:id', async (c) => {
+  const discussion_id = c.req.param('id')
+  const discussion = (await kv.get(["discussions", discussion_id])).value
+
   if (!discussion) {
     return c.notFound()
   }
 
+  const posts = []
+
+  for await (const {key: _, value} of kv.list({prefix: ["posts", discussion_id]})) {
+    posts.push(value)
+  }
+
+
+
   return c.render(
     <>
-      <p>{discussion.content}</p>
+      {posts.map((post) => <Post post={post} />)}
     </>
     , { title: discussion.title }
   )

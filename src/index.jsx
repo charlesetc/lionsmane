@@ -9,6 +9,7 @@ import {
   jsx,
   Fragment,
   serveStatic,
+  useRequestContext as useContext,
 } from 'https://deno.land/x/hono/middleware.ts'
 import sessions from './session.js'
 import { kv } from './kv.js'
@@ -19,12 +20,25 @@ import users from './users.jsx'
 
 const app = new Hono();
 
+ async function current_user(c, next) {
+  c.current_user = async () => { 
+    const email = c.session().get('email')
+    if (!email) return null
+    const user = (await kv.get(["users", email])).value
+    return user
+  }
+
+  await next()
+}
+
 app.use(logger())
 app.use(compress())
 app.use(csrf())
 app.use(flash)
 sessions(app)
 app.use('/*', defaultLayout())
+app.use(current_user)
+
 app.route('/discussions', discussions)
 app.route('/', users)
 
@@ -42,15 +56,17 @@ function LandingPage() {
   )
 }
 
-async function Dashboard({user}) {
+async function Dashboard() {
+  const c = useContext()
+  const user = await c.current_user()
   return (
     <>
       <p>Logged in as {user.name} | {user.email} <a href="/logout">Log out</a></p>
 
-    <ul>
-      <li><a href="/users">User index</a></li>
-      <li><a href="/discussions">Discussions</a></li>
-    </ul>
+      <ul>
+        <li><a href="/users">User index</a></li>
+        <li><a href="/discussions">Discussions</a></li>
+      </ul>
     </>
   )
 }
@@ -58,8 +74,7 @@ async function Dashboard({user}) {
 app.get('/', async (c) => {
   const email = c.session().get('email')
   if (email) {
-    const user = (await kv.get(["users", email])).value
-    return c.render(<Dashboard user={user} />, { title: 'Lionsmane' })
+    return c.render(<Dashboard />, { title: 'Lionsmane' })
   } else {
     return c.render(<LandingPage />, { title: 'Lionsmane' })
   }
