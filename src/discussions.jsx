@@ -5,7 +5,6 @@ import { jsx, Fragment } from 'https://deno.land/x/hono/middleware.ts'
 import { Hono } from 'https://deno.land/x/hono/mod.ts'
 import { nanoid } from "https://deno.land/x/nanoid/mod.ts"
 import { kv } from './kv.js'
-import { createPost } from './posts.jsx'
 
 const app = new Hono();
 
