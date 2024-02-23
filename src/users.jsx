@@ -16,6 +16,7 @@ app.get('/users', async (c) => {
     
   return c.render(
     <>
+      <a href="/">Back</a>
       <ul>
         {users.map((user) => (
           <li>{user.name} | {user.email}</li>
@@ -59,7 +60,7 @@ app.get('/signup', (c) => {
         <button type="submit">Sign up</button>
       </form>
     </>,
-    { title: 'Sign up' }
+    { title: 'Sign up', layout: 'signuplogin' }
   )
 })
 
@@ -96,7 +97,7 @@ app.get('/login', (c) => {
         <button type="submit">Log in</button>
       </form>
     </>
-    , { title: 'Log in' }
+    , { title: 'Log in', layout: 'signuplogin' }
   )
 })
 

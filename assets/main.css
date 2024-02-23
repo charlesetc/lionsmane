@@ -9,7 +9,15 @@ body {
   padding: calc(min(50px, 5%));
   font-family: 'Benne-Regular', serif;
   font-size: 20px;
+  max-width: 800px;
+  margin: auto;
 }
+
+body.default {
+  width: 800px;
+  margin: auto;
+}
+
 
 .login *, .signup * { 
   display: block;
@@ -72,4 +80,34 @@ a, a:visited {
   padding-bottom: 0px;
   padding-top: 8px;
   margin-bottom: 24px;
+}
+
+body.landing {
+  display: flex;
+  flex-direction: row;
+}
+
+.landing .logo {
+  width: 120px;
+  height: 120px;
+  padding: 20px;
+  padding-top: 40px;
+  padding-right: 0px;
+}
+
+.landing .main {
+  padding: 20px;
+  /* max-width: 600px; */
+  padding-right: 10%;
+}
+
+.default .logo { 
+  width: 60px;
+  left: 10px;
+  top: 10px;
+  position: absolute;
+}
+
+.default {
+  padding-top: 60px;
 }

@@ -18,9 +18,10 @@ async function Flashes() {
 }
 
 
-const defaultLayout = () => jsxRenderer(({ children, title, styles }) => {
-    title = title || "Lionsmane"
-    styles = styles || ""
+const defaultLayout = () => jsxRenderer(({ children, title, styles, layout }) => {
+    title = title === undefined ? 'Lionsmane' : title
+    styles = styles === undefined ? '' : styles
+    layout = layout === undefined ? 'default' : layout
     return (
       <html lang="en">
         <head>
@@ -32,8 +33,22 @@ const defaultLayout = () => jsxRenderer(({ children, title, styles }) => {
           <style>{styles}</style>
         </head>
 
-        <body>
-          <h1>{title}</h1>
+        <body class={layout}>
+
+          {
+            layout == 'signuplogin' &&
+            <h1>
+              <span class='title'>{title}</span>
+            </h1>
+          }
+
+          {
+            layout === 'default' && 
+            <h1>
+              <a href='/'><img class='logo' src='/lioness.png' alt='Lionsmane logo' /></a>
+              <span class='title'>{title}</span>
+            </h1>
+          }
 
           <Flashes />
 

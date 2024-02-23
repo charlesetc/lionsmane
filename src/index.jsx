@@ -42,18 +42,25 @@ app.use(current_user)
 app.route('/discussions', discussions)
 app.route('/', users)
 
-function LandingPage() {
-  return (
+function landingPage(c) {
+  return c.render(
     <>
-      <p>
-        The world we have is too complex to make sense of alone; the problems we’re
-        facing too important to tolerate distraction in the name of ad revenue.
-      </p>
+      <img class='logo' src='/lioness.png' alt='Lionsmane logo' />
+      <section class='main'>
+        <h1>Lionsmane</h1>
+        <p>
+          The world we have is too complex to make sense of alone; the problems we’re
+          facing too important to tolerate distraction in the name of ad revenue.
+        </p>
 
-      <a class='button' href="/signup">Sign up</a>
-      <a class='button' href="/login">Log in</a>
-    </>
-  )
+        <a class='button' href="/signup">Sign up</a>
+        <a class='button' href="/login">Log in</a>
+      </section>
+    </>,
+    {
+      title: 'Lionsmane',
+      layout: 'landing', // at the moment, this just means no heading
+    })
 }
 
 async function Dashboard() {
@@ -76,7 +83,7 @@ app.get('/', async (c) => {
   if (email) {
     return c.render(<Dashboard />, { title: 'Lionsmane' })
   } else {
-    return c.render(<LandingPage />, { title: 'Lionsmane' })
+    return landingPage(c)
   }
 })
 
