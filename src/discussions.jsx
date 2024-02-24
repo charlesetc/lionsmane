@@ -16,6 +16,7 @@ app.get('/', async (c) => {
 
   return c.render(
     <>
+      <a href="/">Back</a>
       <ul>
         {discussions.map((discussion) => (
           <li><a href={`/discussions/${discussion.id}`}>{discussion.title}</a></li>
@@ -86,11 +87,12 @@ app.post('/new', async (c) => {
   return c.redirect('/discussions')
 })
 
-function Post({post}) {
+async function Post({post}) {
+  const author = (await kv.get(["users", post.author])).value
   return (
-    <div>
-      <p>{post.author}:</p>
-      <p>{post.content}</p>
+    <div class='post'>
+      <p class='author'>{author.name}</p>
+      <p class='content'>{post.content}</p>
     </div>
   )
 }
@@ -113,6 +115,7 @@ app.get('/:id', async (c) => {
 
   return c.render(
     <>
+      <a href="/discussions">Back</a>
       {posts.map((post) => <Post post={post} />)}
     </>
     , { title: discussion.title }

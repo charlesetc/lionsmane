@@ -14,7 +14,7 @@ import {
 import sessions from './session.js'
 import { kv } from './kv.js'
 import flash from './flash.js'
-import defaultLayout from './layout.jsx'
+import layout from './layout.jsx'
 import discussions from './discussions.jsx'
 import users from './users.jsx'
 
@@ -36,7 +36,7 @@ app.use(compress())
 app.use(csrf())
 app.use(flash)
 sessions(app)
-app.use('/*', defaultLayout())
+app.use('/*', layout())
 app.use(current_user)
 
 app.route('/discussions', discussions)
@@ -45,7 +45,7 @@ app.route('/', users)
 function landingPage(c) {
   return c.render(
     <>
-      <img class='logo' src='/lioness.png' alt='Lionsmane logo' />
+      <img class='logo' src='/lioness-drawing.png' alt='Lionsmane logo' />
       <section class='main'>
         <h1>Lionsmane</h1>
         <p>
