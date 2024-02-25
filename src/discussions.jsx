@@ -107,6 +107,8 @@ app.get('/:id', async (c) => {
     <>
       <a href="/discussions">Back</a>
       {posts.map((post) => <Post post={post} />)}
+      
+      <a class='new-comment'>New Comment</a>
     </>
     , { title: discussion.title }
   )

@@ -20,7 +20,11 @@ app.get('/users', async (c) => {
       <a href="/">Back</a>
       <ul>
         {users.map((user) => (
-          <li>{user.name} | {user.email}</li>
+          <li>
+            <a href={`/users/${user.id}`}>
+              {user.name} | {user.email}
+            </a>
+          </li>
         ))}
       </ul>
     </>
@@ -115,6 +119,19 @@ app.get('/login', (c) => {
 app.get('/logout', (c) => {
   c.session().deleteSession()
   return c.redirect('/')
+})
+
+app.get('/users/:id', async (c) => {
+  const user = (await kv.get(["users", "id", c.req.param('id')])).value
+  if (!user) return c.notFound()
+
+  return c.render(
+    <>
+      <a href="/">Home</a>
+      <p>{user.email}</p>
+    </>
+    , { title: user.name }
+  )
 })
 
 

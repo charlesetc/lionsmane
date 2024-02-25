@@ -13,6 +13,12 @@ body {
   margin: auto;
 }
 
+a, a:visited {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 body.default {
   width: 800px;
   margin: auto;
@@ -132,4 +138,9 @@ body.landing {
 
 .post .content {
   margin-top: 10px;
+}
+
+.new-comment {
+  display: block;
+  margin-top: 20px;
 }
