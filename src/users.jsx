@@ -4,15 +4,18 @@
 import { jsx, Fragment } from 'https://deno.land/x/hono/middleware.ts'
 import { Hono } from 'https://deno.land/x/hono/mod.ts'
 import { kv } from './kv.js'
+import { nanoid } from "https://deno.land/x/nanoid/mod.ts"
 import * as scrypt from "https://deno.land/x/scrypt/mod.ts";
 
 const app = new Hono();
 
 app.get('/users', async (c) => {
   const users = [];
-  for await (const {key: _, value} of kv.list({prefix: ["users"]})) {
+  for await (const {key: _, value} of kv.list({prefix: ["users", "id"]})) {
     users.push(value)
   }
+
+  console.log({users})
     
   return c.render(
     <>
@@ -30,20 +33,25 @@ app.get('/users', async (c) => {
 app.post('/signup', async (c) => {
   const {name, email, password} = Object.fromEntries(await c.req.formData())
 
-  const user = (await kv.get(["users", email])).value
+  const user = (await kv.get(["users", "email", email])).value
   if (user) {
     c.flash.add("User already exists")
     return c.redirect('/signup')
   }
 
   const hash = await scrypt.hash(password, {logN: 8})
+  const id = nanoid()
 
-  await kv.set(["users", email], {
+  await kv.set(["users", "id", id], {
+    id,
     name,
     email,
     hash,
   })
-  c.session().set('email', email)
+
+  await kv.set(["users", "email", email], id)
+
+  c.session().set('user', id)
 
   return c.redirect('/')
 })
@@ -54,7 +62,7 @@ app.get('/signup', (c) => {
     <>
       <a href="/">Back</a>
       <form method='POST' action='/signup' class='signup'>
-        <input required type="text" name="name" placeholder="Name" />
+        <input required type="text" name="name" placeholder="First Name" />
         <input required type="email" name="email" placeholder="Email" />
         <input required type="password" name="password" placeholder="Password" />
         <button type="submit">Sign up</button>
@@ -66,8 +74,13 @@ app.get('/signup', (c) => {
 
 app.post('/login', async (c) => {
   const {email, password} = Object.fromEntries(await c.req.formData())
-  const user = (await kv.get(["users", email])).value
-  
+  const userid = (await kv.get(["users", "email", email])).value
+  if (!userid) {
+    c.flash.add("Invalid email or password")
+    return c.redirect('/login')
+  }
+
+  const user = (await kv.get(["users", "id", userid])).value
   if (!user) {
     c.flash.add("Invalid email or password")
     return c.redirect('/login')
@@ -80,7 +93,7 @@ app.post('/login', async (c) => {
     return c.redirect('/login')
   }
 
-  c.session().set('email', email)
+  c.session().set('user', user.id)
     
   return c.redirect('/')
 })

@@ -114,12 +114,17 @@ body.landing {
 
 .post {
   margin-top: 20px;
-  padding: 20px;
+  padding: 10px;
   border: 1px solid #e9e9ed;
   border-radius: 4px;
 }
 
-.post .author { 
+.post p {
+  padding: 0;
+  margin: 0;
+}
+
+.post a.author { 
   font-size: 14px;
   color: #666;
   margin-bottom: 10px;

@@ -22,9 +22,9 @@ const app = new Hono();
 
  async function current_user(c, next) {
   c.current_user = async () => { 
-    const email = c.session().get('email')
-    if (!email) return null
-    const user = (await kv.get(["users", email])).value
+    const userid = c.session().get('user')
+    if (!userid) return null
+    const user = (await kv.get(["users", "id", userid])).value
     return user
   }
 
@@ -79,8 +79,7 @@ async function Dashboard() {
 }
 
 app.get('/', async (c) => {
-  const email = c.session().get('email')
-  if (email) {
+  if (await c.current_user()) {
     return c.render(<Dashboard />, { title: 'Lionsmane' })
   } else {
     return landingPage(c)

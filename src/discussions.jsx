@@ -30,6 +30,30 @@ app.get('/', async (c) => {
   )
 })
 
+app.get('/:id', async (c) => {
+  const discussion_id = c.req.param('id')
+  const discussion = (await kv.get(["discussions", discussion_id])).value
+
+  if (!discussion) {
+    return c.notFound()
+  }
+
+  const posts = []
+
+  for await (const {key: _, value} of kv.list({prefix: ["posts", discussion_id]})) {
+    posts.push(value)
+  }
+
+  return c.render(
+    <>
+      <a href="/discussions">Back</a>
+      {posts.map((post) => <Post post={post} />)}
+    </>
+    , { title: discussion.title }
+  )
+})
+
+
 app.get('/new', async (c) => {
   return c.render(
     <>
@@ -73,14 +97,14 @@ app.post('/new', async (c) => {
   await kv.set(["discussions", discussion_id], {
     id: discussion_id,
     title,
-    author: user.email,
+    author: user.id,
   })
 
   const post_id = nanoid()
   kv.set(["posts", discussion_id, post_id], {
     id: post_id,
     content,
-    author: user.email,
+    author: user.id,
     discussion: discussion_id,
   })
 
@@ -88,39 +112,13 @@ app.post('/new', async (c) => {
 })
 
 async function Post({post}) {
-  const author = (await kv.get(["users", post.author])).value
+  const author = (await kv.get(["users", "id", post.author])).value
   return (
     <div class='post'>
-      <p class='author'>{author.name}</p>
+      <a href={`/users/${author.id}`} class='author'>{author.name}</a>
       <p class='content'>{post.content}</p>
     </div>
   )
 }
-
-app.get('/:id', async (c) => {
-  const discussion_id = c.req.param('id')
-  const discussion = (await kv.get(["discussions", discussion_id])).value
-
-  if (!discussion) {
-    return c.notFound()
-  }
-
-  const posts = []
-
-  for await (const {key: _, value} of kv.list({prefix: ["posts", discussion_id]})) {
-    posts.push(value)
-  }
-
-
-
-  return c.render(
-    <>
-      <a href="/discussions">Back</a>
-      {posts.map((post) => <Post post={post} />)}
-    </>
-    , { title: discussion.title }
-  )
-})
-
 
 export default app
