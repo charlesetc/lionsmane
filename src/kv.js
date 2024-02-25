@@ -13,3 +13,9 @@ export async function listAll(ns) {
   }
   return list;
 }
+
+export async function deleteEverything() {
+  for await (const entry of kv.list({prefix: []})) {
+    await kv.delete(entry.key);
+  }
+}

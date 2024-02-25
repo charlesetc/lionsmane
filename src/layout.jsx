@@ -6,7 +6,6 @@ import { jsx, Fragment, jsxRenderer, useRequestContext } from 'https://deno.land
 async function Flashes() {
   const c = useRequestContext()
   const flashes = await c.flash.get()
-  console.log({flashes})
   await c.flash.clear()
   return (
     <>

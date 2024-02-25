@@ -30,30 +30,6 @@ app.get('/', async (c) => {
   )
 })
 
-app.get('/:id', async (c) => {
-  const discussion_id = c.req.param('id')
-  const discussion = (await kv.get(["discussions", discussion_id])).value
-
-  if (!discussion) {
-    return c.notFound()
-  }
-
-  const posts = []
-
-  for await (const {key: _, value} of kv.list({prefix: ["posts", discussion_id]})) {
-    posts.push(value)
-  }
-
-  return c.render(
-    <>
-      <a href="/discussions">Back</a>
-      {posts.map((post) => <Post post={post} />)}
-    </>
-    , { title: discussion.title }
-  )
-})
-
-
 app.get('/new', async (c) => {
   return c.render(
     <>
@@ -93,7 +69,7 @@ app.post('/new', async (c) => {
 
   const {title, content} = Object.fromEntries(await c.req.formData())
  
-  const discussion_id = nanoid()
+  const discussion_id = nanoid(10)
   await kv.set(["discussions", discussion_id], {
     id: discussion_id,
     title,
@@ -109,6 +85,31 @@ app.post('/new', async (c) => {
   })
 
   return c.redirect('/discussions')
+})
+
+// NOTE: Make sure this is the last route in the file
+// because it's a catch-all route
+app.get('/:id', async (c) => {
+  const discussion_id = c.req.param('id')
+  const discussion = (await kv.get(["discussions", discussion_id])).value
+
+  if (!discussion) {
+    return c.notFound()
+  }
+
+  const posts = []
+
+  for await (const {key: _, value} of kv.list({prefix: ["posts", discussion_id]})) {
+    posts.push(value)
+  }
+
+  return c.render(
+    <>
+      <a href="/discussions">Back</a>
+      {posts.map((post) => <Post post={post} />)}
+    </>
+    , { title: discussion.title }
+  )
 })
 
 async function Post({post}) {

@@ -15,8 +15,6 @@ app.get('/users', async (c) => {
     users.push(value)
   }
 
-  console.log({users})
-    
   return c.render(
     <>
       <a href="/">Back</a>
@@ -40,7 +38,7 @@ app.post('/signup', async (c) => {
   }
 
   const hash = await scrypt.hash(password, {logN: 8})
-  const id = nanoid()
+  const id = nanoid(8)
 
   await kv.set(["users", "id", id], {
     id,
