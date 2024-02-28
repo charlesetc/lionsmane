@@ -37,17 +37,13 @@ app.post('/signup', async (c) => {
   }
 
   const hash = await scrypt.hash(password, {logN: 8})
-  const id = "U-" + nanoid(8)
-
-  await Users.save({
-    id,
+  user = await Users.create({
     name,
     email,
     hash,
-  })
+  }, prefix="U", length=8)
 
-  c.session().set('user', id)
-
+  c.session().set('user', user.id)
   return c.redirect('/')
 })
 

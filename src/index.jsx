@@ -25,7 +25,6 @@ const app = new Hono();
     const userid = c.session().get('user')
     if (!userid) return null
     const user = await tables.Users.find({ id: userid })
-    console.log( {user} )
     return user
   }
 

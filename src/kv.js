@@ -1,11 +1,13 @@
 import { assertEquals } from "https://deno.land/std@0.217.0/assert/mod.ts";
+import { nanoid } from "https://deno.land/x/nanoid/mod.ts"
 
 export const kv = await Deno.openKv();
 
-export function table(name, primary_key, indices) {
+export function table(name, indices) {
+  const primary_key = "id"
 
   async function save(value) {
-      const tx = kv.atomic()
+      // TODO: use kv.atomic
       await kv.set([name, primary_key, value[primary_key]], value)
       for (const index of indices) {
         await kv.set([name, index, value[index], value[primary_key]], value[primary_key])
@@ -47,8 +49,23 @@ export function table(name, primary_key, indices) {
     return values
   }
 
+  async function create(data, prefix = "", length = 14) {
+    const id = prefix ? `${prefix}-${nanoid(length)}` : nanoid()
+    data['created_at'] = new Date().toISOString()
+    data[primary_key] = id
+    await save(data)
+    return data
+  }
 
-  return { save, find, list, all }
+  async function update(query, data) {
+    // NOTE: this is not atomic and it would be nice if it was
+    const found = await find(query)
+    if (found) {
+      await save({...found, ...data})
+    }
+  }
+
+  return { update, find, list, all, create }
 }
 
 Deno.test("table save & find", async () => {

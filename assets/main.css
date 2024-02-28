@@ -20,7 +20,7 @@ a, a:visited {
 }
 
 body.default {
-  width: 800px;
+  max-width: 800px;
   margin: auto;
 }
 
@@ -30,10 +30,15 @@ body.default {
   margin: 10px 0;
 }
 
+.landing {
+  button, a.button { 
+    margin-right: 10px;
+  }
+}
+
 button, html a.button {
   color: black;
   padding: 4px 6px;
-  margin-right: 10px;
   font-size: 16px;
   cursor: pointer;
   display: inline-block;
@@ -125,22 +130,40 @@ body.landing {
   border-radius: 4px;
 }
 
-.post p {
+.comment p {
   padding: 0;
   margin: 0;
 }
 
-.post a.author { 
+.comment a.author { 
   font-size: 14px;
   color: #666;
   margin-bottom: 10px;
 }
 
-.post .content {
+.comment .content {
   margin-top: 10px;
 }
 
 .new-comment {
   display: block;
   margin-top: 20px;
+}
+
+.wideform {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  input, textarea {
+    padding: 0.5rem;
+  }
+  button {
+    padding: 0.5rem;
+    background-color: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
 }
