@@ -76,9 +76,14 @@ app.post('/new', async (c) => {
     author: user.id,
   })
 
-  const post_id = nanoid()
-  kv.set(["posts", discussion_id, post_id], {
-    id: post_id,
+  const comment_id = nanoid()
+  kv.set(["comments", "by_discussion", discussion_id], {
+    author: user.id,
+    discussion: discussion_id,
+  })
+
+  kv.set(["comments", comment_id], {
+    id: comment_id,
     content,
     author: user.id,
     discussion: discussion_id,

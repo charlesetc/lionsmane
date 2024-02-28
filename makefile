@@ -6,3 +6,6 @@ repl:
 
 deploy:
 	source .secrets && deployctl deploy --project lionsmane --prod src/index.jsx
+
+test:
+	deno test --unstable-kv src/kv.js
