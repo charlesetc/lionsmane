@@ -12,7 +12,7 @@ import {
   useRequestContext as useContext,
 } from 'https://deno.land/x/hono/middleware.ts'
 import sessions from './session.js'
-import { kv } from './kv.js'
+import * as tables from './tables.js'
 import flash from './flash.js'
 import layout from './layout.jsx'
 import discussions from './discussions.jsx'
@@ -24,7 +24,8 @@ const app = new Hono();
   c.current_user = async () => { 
     const userid = c.session().get('user')
     if (!userid) return null
-    const user = (await kv.get(["users", "id", userid])).value
+    const user = await tables.Users.find({ id: userid })
+    console.log( {user} )
     return user
   }
 

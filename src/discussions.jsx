@@ -4,16 +4,12 @@
 import { jsx, Fragment } from 'https://deno.land/x/hono/middleware.ts'
 import { Hono } from 'https://deno.land/x/hono/mod.ts'
 import { nanoid } from "https://deno.land/x/nanoid/mod.ts"
-import { kv } from './kv.js'
+import { Discussions, Comments } from "./tables.js"
 
 const app = new Hono();
 
 app.get('/', async (c) => {
-  const discussions = [];
-  for await (const {key: _, value} of kv.list({prefix: ["discussions"]})) {
-    discussions.push(value)
-  }
-
+  const discussions = await Discussions.all()
   return c.render(
     <>
       <a href="/">Back</a>
@@ -70,23 +66,12 @@ app.post('/new', async (c) => {
   const {title, content} = Object.fromEntries(await c.req.formData())
  
   const discussion_id = nanoid(10)
-  await kv.set(["discussions", discussion_id], {
+
+  Discussions.save({
     id: discussion_id,
     title,
     author: user.id,
-  })
-
-  const comment_id = nanoid()
-  kv.set(["comments", "by_discussion", discussion_id], {
-    author: user.id,
-    discussion: discussion_id,
-  })
-
-  kv.set(["comments", comment_id], {
-    id: comment_id,
     content,
-    author: user.id,
-    discussion: discussion_id,
   })
 
   return c.redirect('/discussions')
@@ -95,23 +80,17 @@ app.post('/new', async (c) => {
 // NOTE: Make sure this is the last route in the file
 // because it's a catch-all route
 app.get('/:id', async (c) => {
-  const discussion_id = c.req.param('id')
-  const discussion = (await kv.get(["discussions", discussion_id])).value
+  const discussion = await Discussions.find({ id: c.req.param('id') })
 
   if (!discussion) {
     return c.notFound()
   }
 
-  const posts = []
-
-  for await (const {key: _, value} of kv.list({prefix: ["posts", discussion_id]})) {
-    posts.push(value)
-  }
-
+  const comments = await Comments.list({ discussion: discussion.id })
   return c.render(
     <>
       <a href="/discussions">Back</a>
-      {posts.map((post) => <Post post={post} />)}
+      {comments.map((comment) => <Comment comment={comment} />)}
       
       <a class='new-comment'>New Comment</a>
     </>
@@ -119,12 +98,12 @@ app.get('/:id', async (c) => {
   )
 })
 
-async function Post({post}) {
-  const author = (await kv.get(["users", "id", post.author])).value
+async function Comment({comment}) {
+  const author = (await kv.get(["users", "id", comment.author])).value
   return (
-    <div class='post'>
+    <div class='comment'>
       <a href={`/users/${author.id}`} class='author'>{author.name}</a>
-      <p class='content'>{post.content}</p>
+      <p class='content'>{comment.content}</p>
     </div>
   )
 }

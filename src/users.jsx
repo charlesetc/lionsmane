@@ -3,18 +3,14 @@
 
 import { jsx, Fragment } from 'https://deno.land/x/hono/middleware.ts'
 import { Hono } from 'https://deno.land/x/hono/mod.ts'
-import { kv } from './kv.js'
 import { nanoid } from "https://deno.land/x/nanoid/mod.ts"
 import * as scrypt from "https://deno.land/x/scrypt/mod.ts";
+import { Users } from "./tables.js"
 
 const app = new Hono();
 
 app.get('/users', async (c) => {
-  const users = [];
-  for await (const {key: _, value} of kv.list({prefix: ["users", "id"]})) {
-    users.push(value)
-  }
-
+  const users = await Users.all()
   return c.render(
     <>
       <a href="/">Back</a>
@@ -34,24 +30,21 @@ app.get('/users', async (c) => {
 
 app.post('/signup', async (c) => {
   const {name, email, password} = Object.fromEntries(await c.req.formData())
-
-  const user = (await kv.get(["users", "email", email])).value
+  const user = await Users.find({ email })
   if (user) {
     c.flash.add("User already exists")
     return c.redirect('/signup')
   }
 
   const hash = await scrypt.hash(password, {logN: 8})
-  const id = nanoid(8)
+  const id = "U-" + nanoid(8)
 
-  await kv.set(["users", "id", id], {
+  await Users.save({
     id,
     name,
     email,
     hash,
   })
-
-  await kv.set(["users", "email", email], id)
 
   c.session().set('user', id)
 
@@ -76,13 +69,7 @@ app.get('/signup', (c) => {
 
 app.post('/login', async (c) => {
   const {email, password} = Object.fromEntries(await c.req.formData())
-  const userid = (await kv.get(["users", "email", email])).value
-  if (!userid) {
-    c.flash.add("Invalid email or password")
-    return c.redirect('/login')
-  }
-
-  const user = (await kv.get(["users", "id", userid])).value
+  const user = await Users.find({ email })
   if (!user) {
     c.flash.add("Invalid email or password")
     return c.redirect('/login')
@@ -122,7 +109,7 @@ app.get('/logout', (c) => {
 })
 
 app.get('/users/:id', async (c) => {
-  const user = (await kv.get(["users", "id", c.req.param('id')])).value
+  const user = await Users.find({ id: c.req.param('id') })
   if (!user) return c.notFound()
 
   return c.render(

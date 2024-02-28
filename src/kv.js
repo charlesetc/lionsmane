@@ -1,46 +1,58 @@
 import { assertEquals } from "https://deno.land/std@0.217.0/assert/mod.ts";
 
-const kv = await Deno.openKv();
+export const kv = await Deno.openKv();
 
 export function table(name, primary_key, indices) {
-  return {
-    async save(value) {
+
+  async function save(value) {
       const tx = kv.atomic()
       await kv.set([name, primary_key, value[primary_key]], value)
       for (const index of indices) {
         await kv.set([name, index, value[index], value[primary_key]], value[primary_key])
       }
-    },
-    async find(query) {
-      if (primary_key in query) {
-         return (await kv.get([name, query[primary_key]])).value
-      }
+  }
 
-      for (const index of indices) {
-        if (index in query) {
-          const key = (await kv.get([name, index, query[index]])).value
-          return (await kv.get([name, primary_key, key])).value
+  async function list(query) {
+    for (const index of indices) {
+      if (index in query) {
+        const entries = await kv.list({prefix: [name, index, query[index]]})
+        const values = []
+        for await (const entry of entries) {
+          const o = (await kv.get([name, primary_key, entry.value])).value
+          values.push(o)
         }
-      }
-    },
-    async list(query) {
-      for (const index of indices) {
-        if (index in query) {
-          const entries = await kv.list({prefix: [name, index, query[index]]})
-          const values = []
-          for await (const entry of entries) {
-            const o = (await kv.get([name, primary_key, entry.value])).value
-            values.push(o)
-          }
-          return values
-        }
+        return values
       }
     }
   }
+
+  async function find(query) { 
+      if (primary_key in query) {
+         return (await kv.get([name, primary_key, query[primary_key]])).value
+      }
+
+      const found = await list(query)
+      if (found.length > 0) {
+        return found[0]
+      }
+      return null
+  }
+
+  async function all() {
+    const entries = await kv.list({prefix: [name, primary_key]})
+    const values = []
+    for await (const entry of entries) {
+      values.push(entry.value)
+    }
+    return values
+  }
+
+
+  return { save, find, list, all }
 }
 
 Deno.test("table save & find", async () => {
-    const users = table("users", "id", ["email"])
+    const users = table("tests", "id", ["email"])
     await users.save({ id: 1, email: "test1@test.com" })
     await users.save({ id: 2, email: "test2@test.com" })
     await users.save({ id: 3, email: "test3@test.com" })
@@ -50,7 +62,7 @@ Deno.test("table save & find", async () => {
 })
 
 Deno.test("table list", async () => {
-    const users = table("users", "id", ["email"])
+    const users = table("tests", "id", ["email"])
     await users.save({ id: 1, email: "wow" })
     await users.save({ id: 2, email: "test2@test.com" })
     await users.save({ id: 3, email: "wow" })
