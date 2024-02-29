@@ -3,14 +3,10 @@
 
 import { jsx, Fragment } from 'https://deno.land/x/hono/middleware.ts'
 import { Hono } from 'https://deno.land/x/hono/mod.ts'
-import { nanoid } from "https://deno.land/x/nanoid/mod.ts"
 import { Discussions, Comments, Users } from "./tables.js"
+import { date } from "./helpers.js"
 
 const app = new Hono();
-
-function date(d) { 
-  return d.toLocaleString().toLowerCase()
-}
 
 async function DiscussionCard({discussion}) { 
   const author = await Users.find({id: discussion.author})

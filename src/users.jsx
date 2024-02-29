@@ -3,11 +3,27 @@
 
 import { jsx, Fragment } from 'https://deno.land/x/hono/middleware.ts'
 import { Hono } from 'https://deno.land/x/hono/mod.ts'
-import { nanoid } from "https://deno.land/x/nanoid/mod.ts"
 import * as scrypt from "https://deno.land/x/scrypt/mod.ts";
-import { Users } from "./tables.js"
+import { Users, Discussions } from "./tables.js"
+import { date } from "./helpers.js"
 
 const app = new Hono();
+
+async function DiscussionCard({discussion}) { 
+  const author = await Users.find({id: discussion.author})
+  return ( 
+    <div class='discussion-card'>
+      <span>
+        <a href={`/discussions/${discussion.id}`}>{discussion.title}</a>
+      </span>
+      <span>
+        <a href={`/users/${author.id}`} class='author'>{author.name}</a> &mdash;&nbsp;
+        {date(discussion.created_at)}
+      </span>
+    </div>
+  )
+}
+
 
 app.get('/users', async (c) => {
   const users = await Users.all()
@@ -18,7 +34,7 @@ app.get('/users', async (c) => {
         {users.map((user) => (
           <li>
             <a href={`/users/${user.id}`}>
-              {user.name} | {user.email}
+              {user.name}
             </a>
           </li>
         ))}
@@ -107,11 +123,15 @@ app.get('/logout', (c) => {
 app.get('/users/:id', async (c) => {
   const user = await Users.find({ id: c.req.param('id') })
   if (!user) return c.notFound()
+  const discussions = await Discussions.list({author: user.id})
 
   return c.render(
     <>
       <a href="/">Home</a>
-      <p>{user.email}</p>
+      <h2>Discussions started</h2>
+      <div class='discussion-list'>
+        {discussions.map((discussion) => <DiscussionCard discussion={discussion} />)}
+      </div>
     </>
     , { title: user.name }
   )

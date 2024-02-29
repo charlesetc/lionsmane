@@ -49,8 +49,13 @@ function landingPage(c) {
       <section class='main'>
         <h1>Lionsmane</h1>
         <p>
-          The world we have is too complex to make sense of alone; the problems we’re
-          facing too important to tolerate distraction in the name of ad revenue.
+          The world we have is too complex to make sense of alone and the problems we’re
+          facing are too important to tolerate distraction in the name of ad revenue.
+        </p>
+
+        <p>
+        Lionsmane's goal is to provide a space for thoughtful, respectful discussion.
+        What's been on your mind lately?
         </p>
 
         <a class='button grey' href="/signup">Sign up</a>
@@ -68,7 +73,7 @@ async function Dashboard() {
   const user = await c.current_user()
   return (
     <>
-      <p>Logged in as {user.name} | {user.email} <a href="/logout">Log out</a></p>
+      <p>Logged in as {user.name} <a href="/logout">Log out</a></p>
 
       <ul>
         <li><a href="/users">User index</a></li>
