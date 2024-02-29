@@ -13,6 +13,11 @@ body {
   margin: auto;
 }
 
+pre, textarea {
+  font-family: 'Benne-Regular', serif;
+  font-size: 20px;
+}
+
 a, a:visited {
   color: blue;
   cursor: pointer;
@@ -30,27 +35,35 @@ body.default {
   margin: 10px 0;
 }
 
-.landing {
+/* Grey buttons on some pages */
+.landing, .signuplogin {
   button, a.button { 
     margin-right: 10px;
+    background: #e9e9ed;
+
+    &:hover {
+      background: #d9d9e2;
+    }
   }
 }
 
 button, html a.button {
   color: black;
-  padding: 4px 6px;
   font-size: 16px;
+  max-width: 100px;
   cursor: pointer;
   display: inline-block;
-  background: #e9e9ed;
+  background-color: #333;
   border: 1px solid #8f8f9d;
-  padding: 4px 6px;
   border-radius: 4px;
+  padding: 10px;
 }
 
 button:hover, .button:hover {
-  background: #d9d9e2;
-  border-color: #7f7f8f;
+  background-color: white;
+  color: black !important;
+  /* border-color: #7f7f8f; */
+  border: 1px solid black !important;
 }
 
 .button { 
@@ -159,9 +172,15 @@ body.landing {
   input, textarea {
     padding: 0.5rem;
   }
+
+  textarea { 
+    height: 100px;
+    padding: 1rem 0.5rem;
+  }
+
+
   button {
     padding: 0.5rem;
-    background-color: #333;
     color: white;
     border: none;
     cursor: pointer;
@@ -174,3 +193,15 @@ body.landing {
   margin-bottom: 10px;
 }
 
+
+.discussion > .author-and-date {
+  margin-top: -6px;
+  font-size: 18px;
+  &, & a {
+    color: #666;
+  }
+}
+
+.discussion pre { 
+  margin-bottom: 0px;
+}

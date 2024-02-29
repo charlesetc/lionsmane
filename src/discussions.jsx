@@ -8,6 +8,10 @@ import { Discussions, Comments, Users } from "./tables.js"
 
 const app = new Hono();
 
+function date(d) { 
+  return d.toLocaleString().toLowerCase()
+}
+
 app.get('/', async (c) => {
   const discussions = await Discussions.all()
   return c.render(
@@ -33,7 +37,7 @@ app.get('/new', async (c) => {
       <a href="/discussions">Back</a>
       <form class='wideform' action="/discussions/new" method="post">
         <input required type="text" name="title" placeholder="Title" />
-        <textarea required name="content" placeholder="Content"></textarea>
+        <textarea fancy="true" required name="content" placeholder="Content"></textarea>
         <button type="submit">Create</button>
       </form>
     </>
@@ -85,24 +89,28 @@ app.get('/:id', async (c) => {
 
   let comments = await Comments.list({ discussion: discussion.id })
   comments = comments.sort((a, b) => a.created_at - b.created_at)
-
-
+  const author = await Users.find({id: discussion.author})
   return c.render(
-    <>
+    <div class='discussion'>
+      <p class='author-and-date'>
+        <a href={`/users/${author.id}`} class='author'>{author.name}</a> &mdash;&nbsp;
+        {date(discussion.created_at)}
+      </p>
+
       <a href="/discussions">Back</a>
 
 
       <div class='content'>
-        <p>{discussion.content}</p>
+        <pre>{discussion.content}</pre>
       </div>
 
       {comments.map((comment) => <Comment comment={comment} />)}
       
       <form class='wideform' method="post" action={`/discussions/${discussion.id}/newcomment`}>
-        <textarea required name="content" placeholder="Comment"></textarea>
+        <textarea fancy='true' required name="content" placeholder="Comment"></textarea>
         <button type="submit">Comment</button>
       </form>
-    </>
+    </div>
     , { title: discussion.title }
   )
 })
@@ -112,8 +120,8 @@ async function Comment({comment}) {
   return (
     <div class='comment'>
       <a href={`/users/${author.id}`} class='author'>{author.name}</a>
-      <p class='date'>{comment.created_at.toLocaleString()}</p>
-      <p class='content'>{comment.content}</p>
+      <p class='date'>{date(comment.created_at)}</p>
+      <pre class='content'>{comment.content}</pre>
     </div>
   )
 }
