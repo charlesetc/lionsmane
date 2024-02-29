@@ -47,7 +47,7 @@ app.post('/new', async (c) => {
 
   const {title, content} = Object.fromEntries(await c.req.formData())
 
-  const discussion = Discussions.create({
+  const discussion = await Discussions.create({
     title,
     author: user.id,
     content,
@@ -72,7 +72,7 @@ app.post('/:id/newcomment', async (c) => {
     discussion: discussion.id,
   })
   
-  return c.redirect(`/discussions/${discussion.id}`)
+  return c.redirect(`/discussions/${discussion.id}?scroll=true`)
 })
 
 // NOTE: Make sure this is the last route in the file
@@ -83,7 +83,10 @@ app.get('/:id', async (c) => {
     return c.notFound()
   }
 
-  const comments = await Comments.list({ discussion: discussion.id })
+  let comments = await Comments.list({ discussion: discussion.id })
+  comments = comments.sort((a, b) => a.created_at - b.created_at)
+
+
   return c.render(
     <>
       <a href="/discussions">Back</a>
@@ -109,6 +112,7 @@ async function Comment({comment}) {
   return (
     <div class='comment'>
       <a href={`/users/${author.id}`} class='author'>{author.name}</a>
+      <p class='date'>{comment.created_at.toLocaleString()}</p>
       <p class='content'>{comment.content}</p>
     </div>
   )

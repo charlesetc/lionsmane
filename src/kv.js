@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.217.0/assert/mod.ts";
+import * as assert from "https://deno.land/std@0.217.0/assert/mod.ts";
 import { nanoid } from "https://deno.land/x/nanoid/mod.ts"
 
 export const kv = await Deno.openKv();
@@ -51,8 +51,8 @@ export function table(name, indices) {
 
   async function create(data, prefix = "", length = 14) {
     const id = prefix ? `${prefix}-${nanoid(length)}` : nanoid()
-    data['created_at'] = new Date().toISOString()
-    data[primary_key] = id
+    if (!data[primary_key]) data[primary_key] = id
+    data['created_at'] = new Date()
     await save(data)
     return data
   }
@@ -68,21 +68,37 @@ export function table(name, indices) {
   return { update, find, list, all, create }
 }
 
+function assertEquals(a, b) {
+  if (Array.isArray(a))
+    a = a.map((o) => { delete o.created_at; return o })
+
+  if (Array.isArray(b))
+    b = b.map((o) => { delete o.created_at; return o })
+
+  if (a instanceof Object)
+    delete a.created_at
+
+  if (b instanceof Object)
+    delete b.created_at
+
+  assert.assertEquals(a, b)
+}
+
 Deno.test("table save & find", async () => {
-    const users = table("tests", "id", ["email"])
-    await users.save({ id: 1, email: "test1@test.com" })
-    await users.save({ id: 2, email: "test2@test.com" })
-    await users.save({ id: 3, email: "test3@test.com" })
+    const users = table("tests", ["email"])
+    await users.create({ id: 1, email: "test1@test.com" })
+    await users.create({ id: 2, email: "test2@test.com" })
+    await users.create({ id: 3, email: "test3@test.com" })
     assertEquals(await users.find({ id: 1 }), { id: 1, email: "test1@test.com" })
     assertEquals(await users.find({ email: "test2@test.com" }), { id: 2, email: "test2@test.com" })
     assertEquals(await users.find({ email: "test1@test.com" }), { id: 1, email: "test1@test.com" })
 })
 
 Deno.test("table list", async () => {
-    const users = table("tests", "id", ["email"])
-    await users.save({ id: 1, email: "wow" })
-    await users.save({ id: 2, email: "test2@test.com" })
-    await users.save({ id: 3, email: "wow" })
+    const users = table("tests", ["email"])
+    await users.create({ id: 1, email: "wow" })
+    await users.create({ id: 2, email: "test2@test.com" })
+    await users.create({ id: 3, email: "wow" })
     assertEquals(await users.list({ email: "wow" }), [{ id: 1, email: "wow" }, { id: 3, email: "wow" }])
 })
 

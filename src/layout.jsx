@@ -35,6 +35,7 @@ const layout = () => jsxRenderer(({ children, title, styles, layout }) => {
           <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
           <link rel="manifest" href="/site.webmanifest" />
           <style>{styles}</style>
+          <script src='/js/scroll.js'></script>
         </head>
 
         <body class={layout}>

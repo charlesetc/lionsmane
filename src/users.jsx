@@ -30,18 +30,18 @@ app.get('/users', async (c) => {
 
 app.post('/signup', async (c) => {
   const {name, email, password} = Object.fromEntries(await c.req.formData())
-  const user = await Users.find({ email })
-  if (user) {
+  const existing = await Users.find({ email })
+  if (existing) {
     c.flash.add("User already exists")
     return c.redirect('/signup')
   }
 
   const hash = await scrypt.hash(password, {logN: 8})
-  user = await Users.create({
+  const user = await Users.create({
     name,
     email,
     hash,
-  }, prefix="U", length=8)
+  }, "U", 8)
 
   c.session().set('user', user.id)
   return c.redirect('/')
