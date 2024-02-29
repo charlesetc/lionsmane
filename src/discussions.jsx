@@ -12,20 +12,34 @@ function date(d) {
   return d.toLocaleString().toLowerCase()
 }
 
+async function DiscussionCard({discussion}) { 
+  const author = await Users.find({id: discussion.author})
+  return ( 
+    <div class='discussion-card'>
+      <span>
+        <a href={`/discussions/${discussion.id}`}>{discussion.title}</a>
+      </span>
+      <span>
+        <a href={`/users/${author.id}`} class='author'>{author.name}</a> &mdash;&nbsp;
+        {date(discussion.created_at)}
+      </span>
+    </div>
+  )
+}
+
 app.get('/', async (c) => {
-  const discussions = await Discussions.all()
+  let discussions = await Discussions.all()
+  discussions = discussions.sort((a, b) => a.created_at - b.created_at)
+
   return c.render(
     <>
       <a href="/">Back</a>
 
-      <ul>
-        {discussions.map((discussion) => (
-          <li><a href={`/discussions/${discussion.id}`}>{discussion.title}</a></li>
-        ))}
-      </ul>
+      <div class='discussion-list'>
+        {discussions.map((discussion) => <DiscussionCard discussion={discussion} />)}
+      </div>
 
-    <a href="/discussions/new">Start a new discussion</a>
-
+      <a class='button grey' href="/discussions/new">Start a new discussion</a>
     </>
     , { title: 'Discussions' }
   )

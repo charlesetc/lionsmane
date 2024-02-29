@@ -53,10 +53,10 @@ app.get('/signup', (c) => {
     <>
       <a href="/">Back</a>
       <form method='POST' action='/signup' class='signup'>
-        <input required type="text" name="name" placeholder="First Name" />
+        <input required autofocus type="text" name="name" placeholder="First Name" />
         <input required type="email" name="email" placeholder="Email" />
         <input required type="password" name="password" placeholder="Password" />
-        <button type="submit">Sign up</button>
+        <button class='grey' type="submit">Sign up</button>
       </form>
     </>,
     { title: 'Sign up', layout: 'signuplogin' }
@@ -90,9 +90,9 @@ app.get('/login', (c) => {
       <a href="/">Back</a>
 
       <form  method='POST' action='/login' class='login'>
-        <input required type="email" name="email" placeholder="Email" />
+        <input required autofocus type="email" name="email" placeholder="Email" />
         <input required type="password" name="password" placeholder="Password" />
-        <button type="submit">Log in</button>
+        <button class='grey' type="submit">Log in</button>
       </form>
     </>
     , { title: 'Log in', layout: 'signuplogin' }

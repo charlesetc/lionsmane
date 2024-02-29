@@ -53,8 +53,8 @@ function landingPage(c) {
           facing too important to tolerate distraction in the name of ad revenue.
         </p>
 
-        <a class='button' href="/signup">Sign up</a>
-        <a class='button' href="/login">Log in</a>
+        <a class='button grey' href="/signup">Sign up</a>
+        <a class='button grey' href="/login">Log in</a>
       </section>
     </>,
     {
