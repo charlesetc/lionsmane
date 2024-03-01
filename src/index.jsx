@@ -73,7 +73,7 @@ async function Dashboard() {
   const user = await c.current_user()
   return (
     <>
-      <p>Logged in as {user.name} <a href="/logout">Log out</a></p>
+      <p>Logged in as {user.name}<a href="/logout">Log out</a></p>
 
       <ul>
         <li><a href="/users">User index</a></li>

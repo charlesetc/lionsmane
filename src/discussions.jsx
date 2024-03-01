@@ -11,7 +11,7 @@ const app = new Hono();
 async function DiscussionCard({discussion}) { 
   const author = await Users.find({id: discussion.author})
   return ( 
-    <div class='discussion-card'>
+    <div class='card'>
       <span>
         <a href={`/discussions/${discussion.id}`}>{discussion.title}</a>
       </span>
@@ -31,7 +31,7 @@ app.get('/', async (c) => {
     <>
       <a href="/">Back</a>
 
-      <div class='discussion-list'>
+      <div class='card-list'>
         {discussions.map((discussion) => <DiscussionCard discussion={discussion} />)}
       </div>
 

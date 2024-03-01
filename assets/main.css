@@ -210,11 +210,11 @@ button.new-comment {
   }
 }
 
-.discussion-list {
+.card-list {
   margin-top: 20px;
   margin-bottom: 30px;
 
-  .discussion-card { 
+  .card { 
     padding: 12px 14px;
     padding-bottom: 8px;
     border: 1px solid #e9e9ed;

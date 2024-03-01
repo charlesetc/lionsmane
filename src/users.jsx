@@ -4,15 +4,14 @@
 import { jsx, Fragment } from 'https://deno.land/x/hono/middleware.ts'
 import { Hono } from 'https://deno.land/x/hono/mod.ts'
 import * as scrypt from "https://deno.land/x/scrypt/mod.ts";
-import { Users, Discussions } from "./tables.js"
+import { Users, Discussions, Comments } from "./tables.js"
 import { date } from "./helpers.js"
 
 const app = new Hono();
 
-async function DiscussionCard({discussion}) { 
-  const author = await Users.find({id: discussion.author})
+async function DiscussionCard({discussion, author}) { 
   return ( 
-    <div class='discussion-card'>
+    <div class='card'>
       <span>
         <a href={`/discussions/${discussion.id}`}>{discussion.title}</a>
       </span>
@@ -23,6 +22,7 @@ async function DiscussionCard({discussion}) {
     </div>
   )
 }
+
 
 
 app.get('/users', async (c) => {
@@ -120,17 +120,36 @@ app.get('/logout', (c) => {
   return c.redirect('/')
 })
 
+async function discussions_user_commented_on(user) {
+  const comments_by_user = await Comments.list({author: user.id});
+  const discussion_ids = new Set(comments_by_user.map((comment) => comment.discussion))
+
+  const discussions = []
+  for (const id of discussion_ids) {
+    const discussion = await Discussions.find({id})
+    discussions.push(discussion)
+  } 
+  return discussions
+}
+
 app.get('/users/:id', async (c) => {
   const user = await Users.find({ id: c.req.param('id') })
   if (!user) return c.notFound()
-  const discussions = await Discussions.list({author: user.id})
+  let started = await Discussions.list({author: user.id})
+  let commented = await discussions_user_commented_on(user)
+  commented = commented.filter((discussion) => discussion.author !== user.id)
 
   return c.render(
     <>
       <a href="/">Home</a>
-      <h2>Discussions started</h2>
-      <div class='discussion-list'>
-        {discussions.map((discussion) => <DiscussionCard discussion={discussion} />)}
+      <h2>Started</h2>
+      <div class='card-list'>
+        {started.map((discussion) => <DiscussionCard discussion={discussion} author={user} />)}
+      </div>
+
+      <h2>Commented</h2>
+      <div class='card-list'>
+        {commented.map((discussion) => <DiscussionCard discussion={discussion} author={user} />)}
       </div>
     </>
     , { title: user.name }
